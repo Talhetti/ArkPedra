@@ -1,0 +1,635 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="ArkPedra — simulador de orçamento online para marmorarias, com estimativa instantânea e pedido enviado ao WhatsApp.">
+  <title>ArkPedra — Simulador de orçamento para marmorarias</title>
+  <style>
+    :root {
+      --ivory: #f5f2ec;
+      --paper: #fffefa;
+      --graphite: #252522;
+      --stone: #74716b;
+      --vein: #d8d1c7;
+      --bronze: #a4603c;
+      --bronze-dark: #77432d;
+      --bronze-soft: #ead6c8;
+      --whatsapp: #25d366;
+      --whatsapp-dark: #0d7d3e;
+      --shadow: 0 24px 70px rgba(55, 44, 34, .12);
+      --radius: 24px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      overflow-x: hidden;
+      color: var(--graphite);
+      background:
+        radial-gradient(circle at 8% 4%, rgba(164,96,60,.13), transparent 24rem),
+        radial-gradient(circle at 90% 28%, rgba(116,113,107,.10), transparent 28rem),
+        var(--ivory);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.55;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      opacity: .34;
+      pointer-events: none;
+      background-image:
+        linear-gradient(117deg, transparent 0 41%, rgba(98,92,83,.08) 41.2%, transparent 41.8%),
+        linear-gradient(64deg, transparent 0 66%, rgba(164,96,60,.06) 66.1%, transparent 66.7%);
+      background-size: 740px 520px, 620px 460px;
+    }
+
+    button, input, select { font: inherit; }
+    button { cursor: pointer; }
+    a { color: inherit; }
+
+    .shell { width: min(1180px, calc(100% - 40px)); margin-inline: auto; }
+
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      border-bottom: 1px solid rgba(216,209,199,.75);
+      background: rgba(245,242,236,.84);
+      backdrop-filter: blur(18px);
+    }
+
+    .nav {
+      min-height: 76px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      font-weight: 800;
+      letter-spacing: -.04em;
+      font-size: 1.32rem;
+    }
+
+    .brand-mark {
+      width: 38px;
+      height: 38px;
+      display: grid;
+      place-items: center;
+      border-radius: 12px;
+      color: white;
+      background: var(--bronze);
+      box-shadow: 0 8px 24px rgba(164,96,60,.25);
+    }
+
+    .brand strong { color: var(--bronze); }
+
+    .nav-links { display: flex; align-items: center; gap: 26px; }
+    .nav-links a { text-decoration: none; color: var(--stone); font-size: .93rem; font-weight: 650; }
+    .nav-links a:hover { color: var(--bronze-dark); }
+
+    .mini-cta {
+      padding: 11px 17px;
+      border-radius: 999px;
+      color: var(--paper) !important;
+      background: var(--graphite);
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: .92fr 1.08fr;
+      align-items: center;
+      gap: 72px;
+      min-height: calc(100vh - 76px);
+      padding-block: 76px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      margin: 0 0 18px;
+      color: var(--bronze-dark);
+      font-size: .78rem;
+      font-weight: 800;
+      letter-spacing: .13em;
+      text-transform: uppercase;
+    }
+
+    .eyebrow::before {
+      content: "";
+      width: 28px;
+      height: 2px;
+      background: var(--bronze);
+    }
+
+    h1, h2, h3, p { margin-top: 0; }
+
+    h1 {
+      margin-bottom: 24px;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(3.1rem, 6.5vw, 6.4rem);
+      line-height: .93;
+      font-weight: 500;
+      letter-spacing: -.055em;
+    }
+
+    h1 em { color: var(--bronze); font-weight: 500; }
+
+    .hero-copy > p:not(.eyebrow) {
+      max-width: 590px;
+      color: var(--stone);
+      font-size: clamp(1.05rem, 1.7vw, 1.24rem);
+    }
+
+    .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin: 32px 0 36px; }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      min-height: 52px;
+      padding: 0 21px;
+      border: 0;
+      border-radius: 14px;
+      text-decoration: none;
+      font-weight: 800;
+      transition: transform .2s ease, box-shadow .2s ease, background .2s ease;
+    }
+
+    .button:hover { transform: translateY(-2px); }
+    .button-primary { color: #fff; background: var(--bronze); box-shadow: 0 12px 28px rgba(164,96,60,.24); }
+    .button-primary:hover { background: var(--bronze-dark); }
+    .button-ghost { border: 1px solid var(--vein); background: rgba(255,254,250,.7); }
+    .button-whatsapp { color: #07371d; background: var(--whatsapp); box-shadow: 0 14px 34px rgba(37,211,102,.23); }
+
+    .proof-line { display: flex; flex-wrap: wrap; gap: 18px 26px; color: var(--stone); font-size: .88rem; }
+    .proof-line span { display: inline-flex; align-items: center; gap: 8px; }
+    .proof-line i { width: 7px; height: 7px; border-radius: 50%; background: var(--bronze); }
+
+    .product-stage { position: relative; }
+    .product-stage::before {
+      content: "";
+      position: absolute;
+      inset: 7% -6% -5% 8%;
+      z-index: -1;
+      border-radius: 42px;
+      background: var(--bronze-soft);
+      transform: rotate(2.5deg);
+    }
+
+    .simulator {
+      overflow: hidden;
+      border: 1px solid rgba(216,209,199,.88);
+      border-radius: 30px;
+      background: rgba(255,254,250,.97);
+      box-shadow: var(--shadow);
+    }
+
+    .sim-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      padding: 24px 26px;
+      border-bottom: 1px solid var(--vein);
+    }
+
+    .sim-head strong { display: block; font-size: 1.05rem; }
+    .sim-head small { color: var(--stone); }
+
+    .demo-badge {
+      flex: none;
+      padding: 7px 10px;
+      border-radius: 999px;
+      color: var(--bronze-dark);
+      background: var(--bronze-soft);
+      font-size: .72rem;
+      font-weight: 800;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+    }
+
+    .progress { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; padding: 18px 26px 0; }
+    .progress span { height: 4px; border-radius: 999px; background: var(--vein); transition: background .2s ease; }
+    .progress span.active { background: var(--bronze); }
+
+    .step { display: none; padding: 24px 26px 26px; animation: appear .25s ease; }
+    .step.active { display: block; }
+
+    @keyframes appear { from { opacity: 0; transform: translateY(7px); } }
+
+    .step-kicker { margin-bottom: 5px; color: var(--bronze); font-size: .76rem; font-weight: 800; text-transform: uppercase; letter-spacing: .09em; }
+    .step h3 { margin-bottom: 18px; font-size: 1.35rem; }
+
+    .stone-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+
+    .choice {
+      position: relative;
+      min-height: 80px;
+      padding: 14px;
+      border: 1px solid var(--vein);
+      border-radius: 15px;
+      background: #fff;
+      text-align: left;
+      color: var(--graphite);
+    }
+
+    .choice:hover, .choice.selected { border-color: var(--bronze); box-shadow: 0 0 0 3px rgba(164,96,60,.10); }
+    .choice.selected::after { content: "✓"; position: absolute; right: 11px; top: 9px; color: var(--bronze); font-weight: 900; }
+    .choice strong, .choice small { display: block; }
+    .choice small { margin-top: 3px; color: var(--stone); }
+
+    .fields { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+    .field label { display: block; margin-bottom: 7px; color: var(--stone); font-size: .82rem; font-weight: 750; }
+    .field input, .field select {
+      width: 100%;
+      height: 50px;
+      padding: 0 13px;
+      border: 1px solid var(--vein);
+      border-radius: 12px;
+      color: var(--graphite);
+      background: #fff;
+      outline: none;
+    }
+    .field input:focus, .field select:focus { border-color: var(--bronze); box-shadow: 0 0 0 3px rgba(164,96,60,.10); }
+    .field.full { grid-column: 1 / -1; }
+
+    .step-actions { display: flex; justify-content: space-between; gap: 12px; margin-top: 24px; }
+    .step-actions .button { min-height: 46px; }
+    .step-actions .back { color: var(--stone); background: transparent; border: 1px solid var(--vein); }
+    .step-actions .next { margin-left: auto; color: #fff; background: var(--graphite); }
+
+    .estimate-box { padding: 18px; border-radius: 18px; color: #fff; background: var(--graphite); }
+    .estimate-line { display: flex; justify-content: space-between; gap: 20px; padding: 8px 0; color: #cbc9c3; font-size: .88rem; }
+    .estimate-line.total { align-items: end; margin-top: 7px; padding-top: 16px; border-top: 1px solid #4b4a45; color: #fff; }
+    .estimate-line.total strong { color: #e7b38f; font-family: Georgia, serif; font-size: 2rem; line-height: 1; }
+    .estimate-note { margin: 13px 0 0; color: var(--stone); font-size: .76rem; }
+
+    .section { padding-block: 110px; }
+    .section-heading { max-width: 760px; margin-bottom: 50px; }
+    .section-heading h2 { margin-bottom: 18px; font: 500 clamp(2.2rem, 4.5vw, 4.2rem)/1.02 Georgia, serif; letter-spacing: -.04em; }
+    .section-heading > p { color: var(--stone); font-size: 1.1rem; }
+
+    .journey { background: var(--graphite); color: #fff; }
+    .journey .eyebrow { color: #e7b38f; }
+    .journey .section-heading > p { color: #b9b6ae; }
+    .journey-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; border: 1px solid #46453f; border-radius: var(--radius); overflow: hidden; background: #46453f; }
+    .journey-card { min-height: 270px; padding: 28px; background: var(--graphite); }
+    .journey-card .number { display: block; margin-bottom: 54px; color: #e7b38f; font: italic 1.1rem Georgia, serif; }
+    .journey-card h3 { font-size: 1.15rem; }
+    .journey-card p { margin-bottom: 0; color: #aaa79f; font-size: .92rem; }
+
+    .benefits { display: grid; grid-template-columns: .92fr 1.08fr; gap: 70px; align-items: start; }
+    .benefit-list { display: grid; gap: 14px; }
+    .benefit {
+      display: grid;
+      grid-template-columns: 50px 1fr;
+      gap: 17px;
+      padding: 22px;
+      border: 1px solid var(--vein);
+      border-radius: 18px;
+      background: rgba(255,254,250,.72);
+    }
+    .benefit-icon { width: 50px; height: 50px; display: grid; place-items: center; border-radius: 14px; color: var(--bronze-dark); background: var(--bronze-soft); font-weight: 900; }
+    .benefit h3 { margin-bottom: 4px; }
+    .benefit p { margin-bottom: 0; color: var(--stone); font-size: .92rem; }
+
+    .phone-wrap { position: sticky; top: 110px; }
+    .phone {
+      max-width: 390px;
+      margin-inline: auto;
+      padding: 14px;
+      border-radius: 38px;
+      background: #191a18;
+      box-shadow: var(--shadow);
+    }
+    .phone-screen { overflow: hidden; min-height: 580px; border-radius: 28px; background: #efeae2; }
+    .phone-head { display: flex; align-items: center; gap: 11px; padding: 24px 18px 14px; color: #fff; background: #075e54; }
+    .avatar { width: 38px; height: 38px; display: grid; place-items: center; border-radius: 50%; color: white; background: var(--bronze); font-weight: 900; }
+    .phone-head strong, .phone-head small { display: block; }
+    .phone-head small { opacity: .72; }
+    .chat { padding: 22px 15px; }
+    .bubble { width: 88%; margin-left: auto; padding: 13px 14px; border-radius: 14px 3px 14px 14px; background: #d9fdd3; box-shadow: 0 1px 1px rgba(0,0,0,.08); font-size: .86rem; white-space: pre-line; }
+    .bubble-time { display: block; margin-top: 7px; color: #6d776c; font-size: .67rem; text-align: right; }
+
+    .cta-panel {
+      overflow: hidden;
+      position: relative;
+      display: grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap: 40px;
+      align-items: center;
+      padding: 54px;
+      border-radius: 30px;
+      color: #fff;
+      background: var(--bronze-dark);
+    }
+    .cta-panel::after { content: ""; position: absolute; width: 350px; height: 350px; right: -80px; top: -180px; border: 75px solid rgba(255,255,255,.07); border-radius: 50%; }
+    .cta-panel h2 { margin-bottom: 12px; font: 500 clamp(2.2rem, 4vw, 3.8rem)/1 Georgia, serif; letter-spacing: -.035em; }
+    .cta-panel p { margin-bottom: 0; color: #eadbd2; }
+    .cta-panel .button { position: relative; z-index: 1; justify-self: end; background: var(--paper); color: var(--bronze-dark); }
+
+    footer { padding: 34px 0 42px; color: var(--stone); font-size: .85rem; }
+    .footer-row { display: flex; justify-content: space-between; gap: 20px; padding-top: 26px; border-top: 1px solid var(--vein); }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 28px;
+      z-index: 40;
+      transform: translate(-50%, 30px);
+      opacity: 0;
+      pointer-events: none;
+      padding: 12px 18px;
+      border-radius: 999px;
+      color: #fff;
+      background: var(--graphite);
+      box-shadow: var(--shadow);
+      transition: .25s ease;
+    }
+    .toast.show { transform: translate(-50%, 0); opacity: 1; }
+
+    @media (max-width: 960px) {
+      .nav-links a:not(.mini-cta) { display: none; }
+      .hero { grid-template-columns: 1fr; min-height: auto; gap: 56px; padding-block: 64px 90px; }
+      .hero-copy { max-width: 720px; }
+      .product-stage { max-width: 680px; }
+      .journey-grid { grid-template-columns: repeat(2, 1fr); }
+      .benefits { grid-template-columns: 1fr; }
+      .phone-wrap { position: static; }
+      .cta-panel { grid-template-columns: 1fr; }
+      .cta-panel .button { justify-self: start; }
+    }
+
+    @media (max-width: 620px) {
+      .shell { width: min(100% - 24px, 1180px); }
+      .nav { min-height: 66px; }
+      .brand-mark { width: 34px; height: 34px; }
+      .mini-cta { padding: 9px 13px !important; font-size: .82rem !important; }
+      h1 { font-size: clamp(3rem, 17vw, 4.8rem); }
+      .hero { padding-top: 44px; }
+      .product-stage::before { display: none; }
+      .simulator { border-radius: 22px; }
+      .sim-head, .step { padding-left: 18px; padding-right: 18px; }
+      .progress { padding-left: 18px; padding-right: 18px; }
+      .stone-grid, .fields, .journey-grid { grid-template-columns: 1fr; }
+      .journey-card { min-height: 220px; }
+      .journey-card .number { margin-bottom: 34px; }
+      .section { padding-block: 78px; }
+      .benefit { grid-template-columns: 42px 1fr; padding: 18px; }
+      .benefit-icon { width: 42px; height: 42px; }
+      .cta-panel { padding: 34px 24px; }
+      .footer-row { flex-direction: column; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <nav class="shell nav" aria-label="Navegação principal">
+      <a class="brand" href="#inicio" aria-label="ArkPedra, início">
+        <span class="brand-mark">A</span>
+        <span>Ark<strong>Pedra</strong></span>
+      </a>
+      <div class="nav-links">
+        <a href="#como-funciona">Como funciona</a>
+        <a href="#beneficios">Benefícios</a>
+        <a class="mini-cta" href="#simulador">Testar simulador</a>
+      </div>
+    </nav>
+  </header>
+
+  <main id="inicio">
+    <section class="shell hero">
+      <div class="hero-copy">
+        <p class="eyebrow">Orçamento digital para marmorarias</p>
+        <h1>Da escolha da pedra ao <em>WhatsApp.</em></h1>
+        <p>A ArkPedra transforma dúvidas em pedidos completos. Seu cliente configura o projeto, recebe uma estimativa instantânea e envia tudo organizado para a equipe da loja.</p>
+        <div class="hero-actions">
+          <a class="button button-primary" href="#simulador">Simular agora <span aria-hidden="true">↘</span></a>
+          <a class="button button-ghost" href="#como-funciona">Conhecer a solução</a>
+        </div>
+        <div class="proof-line" aria-label="Destaques da solução">
+          <span><i></i> Experiência simples</span>
+          <span><i></i> Estimativa configurável</span>
+          <span><i></i> Pedido estruturado</span>
+        </div>
+      </div>
+
+      <div class="product-stage" id="simulador">
+        <section class="simulator" aria-label="Demonstração do simulador de orçamento">
+          <div class="sim-head">
+            <div><strong>Simule sua bancada</strong><small>Leva menos de 2 minutos</small></div>
+            <span class="demo-badge">Demonstração</span>
+          </div>
+          <div class="progress" aria-label="Progresso"><span class="active"></span><span></span><span></span><span></span><span></span></div>
+
+          <div class="step active" data-step="0">
+            <p class="step-kicker">Etapa 1 de 5</p>
+            <h3>Qual pedra combina com seu projeto?</h3>
+            <div class="stone-grid">
+              <button class="choice selected" type="button" data-stone="Granito escuro" data-price="480"><strong>Granito escuro</strong><small>Resistente e versátil</small></button>
+              <button class="choice" type="button" data-stone="Quartzo branco" data-price="920"><strong>Quartzo branco</strong><small>Visual limpo e uniforme</small></button>
+              <button class="choice" type="button" data-stone="Mármore claro" data-price="760"><strong>Mármore claro</strong><small>Elegância natural</small></button>
+              <button class="choice" type="button" data-stone="Pedra exótica" data-price="1180"><strong>Pedra exótica</strong><small>Personalidade marcante</small></button>
+            </div>
+            <div class="step-actions"><button class="button next" type="button">Continuar →</button></div>
+          </div>
+
+          <div class="step" data-step="1">
+            <p class="step-kicker">Etapa 2 de 5</p>
+            <h3>Informe as medidas</h3>
+            <div class="fields">
+              <div class="field"><label for="length">Comprimento (cm)</label><input id="length" type="number" value="180" min="30" max="900" inputmode="numeric"></div>
+              <div class="field"><label for="depth">Profundidade (cm)</label><input id="depth" type="number" value="60" min="20" max="180" inputmode="numeric"></div>
+              <div class="field full"><label for="quantity">Quantidade de peças</label><input id="quantity" type="number" value="1" min="1" max="20" inputmode="numeric"></div>
+            </div>
+            <div class="step-actions"><button class="button back" type="button">← Voltar</button><button class="button next" type="button">Continuar →</button></div>
+          </div>
+
+          <div class="step" data-step="2">
+            <p class="step-kicker">Etapa 3 de 5</p>
+            <h3>Escolha a cuba</h3>
+            <div class="fields">
+              <div class="field full"><label for="sink">Modelo</label><select id="sink"><option value="0">Sem cuba</option><option value="180">Recorte para cuba do cliente</option><option value="650" selected>Cuba inox simples</option><option value="1100">Cuba gourmet</option></select></div>
+              <div class="field full"><label for="sinkPosition">Posição</label><select id="sinkPosition"><option>Centralizada</option><option>À esquerda</option><option>À direita</option></select></div>
+            </div>
+            <div class="step-actions"><button class="button back" type="button">← Voltar</button><button class="button next" type="button">Continuar →</button></div>
+          </div>
+
+          <div class="step" data-step="3">
+            <p class="step-kicker">Etapa 4 de 5</p>
+            <h3>Defina os acabamentos</h3>
+            <div class="fields">
+              <div class="field"><label for="backsplash">Frontão</label><select id="backsplash"><option value="0">Sem frontão</option><option value="10" selected>10 cm</option><option value="15">15 cm</option><option value="20">20 cm</option></select></div>
+              <div class="field"><label for="finish">Acabamento da borda</label><select id="finish"><option value="40">Reto polido</option><option value="85" selected>Meia esquadria</option><option value="110">Boleado</option></select></div>
+              <div class="field full"><label for="installation">Instalação</label><select id="installation"><option value="320" selected>Incluir instalação</option><option value="0">Somente fornecimento</option></select></div>
+            </div>
+            <div class="step-actions"><button class="button back" type="button">← Voltar</button><button class="button next" type="button">Ver estimativa →</button></div>
+          </div>
+
+          <div class="step" data-step="4">
+            <p class="step-kicker">Etapa 5 de 5</p>
+            <h3>Sua estimativa está pronta</h3>
+            <div class="estimate-box">
+              <div class="estimate-line"><span>Material e medidas</span><span id="materialValue">R$ 0</span></div>
+              <div class="estimate-line"><span>Cuba e acabamento</span><span id="extrasValue">R$ 0</span></div>
+              <div class="estimate-line total"><span>Estimativa</span><strong id="totalValue">R$ 0</strong></div>
+            </div>
+            <p class="estimate-note">Valores ilustrativos para demonstrar o produto. A marmoraria configura sua tabela, regras de cálculo e condições comerciais.</p>
+            <div class="step-actions"><button class="button back" type="button">← Ajustar</button><button class="button button-whatsapp" id="sendWhatsapp" type="button">Enviar pelo WhatsApp</button></div>
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <section class="section journey" id="como-funciona">
+      <div class="shell">
+        <div class="section-heading">
+          <p class="eyebrow">Como funciona</p>
+          <h2>Uma jornada simples para o cliente. Um pedido melhor para a loja.</h2>
+          <p>Cada escolha é transformada em informação comercial útil — sem formulário confuso e sem orçamento perdido em várias mensagens.</p>
+        </div>
+        <div class="journey-grid">
+          <article class="journey-card"><span class="number">01</span><h3>Cliente configura</h3><p>Seleciona a pedra, informa as medidas e personaliza cuba, frontão e acabamento.</p></article>
+          <article class="journey-card"><span class="number">02</span><h3>Sistema estima</h3><p>Aplica a tabela e as regras comerciais definidas pela própria marmoraria.</p></article>
+          <article class="journey-card"><span class="number">03</span><h3>Pedido é organizado</h3><p>As escolhas viram um resumo claro, com dimensões, itens e estimativa.</p></article>
+          <article class="journey-card"><span class="number">04</span><h3>WhatsApp recebe</h3><p>A equipe continua o atendimento com contexto para validar e fechar a venda.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="shell section benefits" id="beneficios">
+      <div>
+        <div class="section-heading">
+          <p class="eyebrow">Mais clareza, menos atrito</p>
+          <h2>Seu atendimento começa antes da primeira mensagem.</h2>
+          <p>O simulador educa o cliente, organiza a demanda e ajuda a equipe a priorizar contatos mais completos.</p>
+        </div>
+        <div class="benefit-list">
+          <article class="benefit"><div class="benefit-icon">01</div><div><h3>Estimativa imediata</h3><p>O cliente entende a faixa do investimento sem depender de uma resposta manual inicial.</p></div></article>
+          <article class="benefit"><div class="benefit-icon">02</div><div><h3>Atendimento contextualizado</h3><p>A conversa já começa com material, medidas e preferências organizadas.</p></div></article>
+          <article class="benefit"><div class="benefit-icon">03</div><div><h3>Regras da sua empresa</h3><p>Preços, adicionais e condições podem refletir a operação de cada marmoraria.</p></div></article>
+        </div>
+      </div>
+
+      <div class="phone-wrap" aria-label="Prévia do pedido no WhatsApp">
+        <div class="phone">
+          <div class="phone-screen">
+            <div class="phone-head"><div class="avatar">A</div><div><strong>Ark Marmoraria</strong><small>online</small></div></div>
+            <div class="chat"><div class="bubble" id="messagePreview">Olá! Fiz uma simulação na ArkPedra.
+
+• Pedra: Granito escuro
+• Medidas: 180 × 60 cm
+• Cuba: Cuba inox simples
+• Frontão: 10 cm
+• Acabamento: Meia esquadria
+• Estimativa: calculando...
+
+Gostaria de confirmar o orçamento.<span class="bubble-time">agora ✓✓</span></div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="shell section">
+      <div class="cta-panel">
+        <div><p class="eyebrow">ArkPedra</p><h2>Transforme visitas em pedidos bem definidos.</h2><p>Uma experiência de orçamento digital pensada para o jeito que a marmoraria vende.</p></div>
+        <a class="button" href="#simulador">Experimentar a demonstração →</a>
+      </div>
+    </section>
+  </main>
+
+  <footer><div class="shell footer-row"><span>© 2026 ArkPedra</span><span>Escolha, simule e peça pelo WhatsApp.</span></div></footer>
+  <div class="toast" id="toast" role="status" aria-live="polite">Mensagem pronta para o WhatsApp</div>
+
+  <script>
+    const state = { step: 0, stone: 'Granito escuro', stonePrice: 480 };
+    const steps = [...document.querySelectorAll('.step')];
+    const progress = [...document.querySelectorAll('.progress span')];
+    const money = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 });
+
+    function field(id) { return document.getElementById(id); }
+    function labelOf(select) { return select.options[select.selectedIndex].text; }
+
+    function calculate() {
+      const length = Math.max(30, Number(field('length').value) || 0);
+      const depth = Math.max(20, Number(field('depth').value) || 0);
+      const quantity = Math.max(1, Number(field('quantity').value) || 1);
+      const area = (length * depth / 10000) * quantity;
+      const material = area * state.stonePrice;
+      const sink = Number(field('sink').value);
+      const frontHeight = Number(field('backsplash').value);
+      const front = (length / 100) * (frontHeight / 100) * state.stonePrice * quantity;
+      const edge = (length / 100) * Number(field('finish').value) * quantity;
+      const install = Number(field('installation').value);
+      const extras = sink + front + edge + install;
+      const total = material + extras;
+
+      field('materialValue').textContent = money.format(material);
+      field('extrasValue').textContent = money.format(extras);
+      field('totalValue').textContent = money.format(total);
+
+      const message = `Olá! Fiz uma simulação na ArkPedra.\n\n• Pedra: ${state.stone}\n• Medidas: ${length} × ${depth} cm (${quantity} peça${quantity > 1 ? 's' : ''})\n• Cuba: ${labelOf(field('sink'))} — ${labelOf(field('sinkPosition'))}\n• Frontão: ${labelOf(field('backsplash'))}\n• Acabamento: ${labelOf(field('finish'))}\n• Instalação: ${labelOf(field('installation'))}\n• Estimativa: ${money.format(total)}\n\nGostaria de confirmar o orçamento.`;
+      const preview = field('messagePreview');
+      preview.innerHTML = `${escapeHtml(message)}<span class="bubble-time">agora ✓✓</span>`;
+      return message;
+    }
+
+    function escapeHtml(text) {
+      const node = document.createElement('div');
+      node.textContent = text;
+      return node.innerHTML;
+    }
+
+    function showStep(nextStep) {
+      state.step = Math.max(0, Math.min(steps.length - 1, nextStep));
+      steps.forEach((step, index) => step.classList.toggle('active', index === state.step));
+      progress.forEach((bar, index) => bar.classList.toggle('active', index <= state.step));
+      if (state.step === 4) calculate();
+    }
+
+    document.querySelectorAll('[data-stone]').forEach(button => {
+      button.addEventListener('click', () => {
+        document.querySelectorAll('[data-stone]').forEach(item => item.classList.remove('selected'));
+        button.classList.add('selected');
+        state.stone = button.dataset.stone;
+        state.stonePrice = Number(button.dataset.price);
+        calculate();
+      });
+    });
+
+    document.querySelectorAll('.next').forEach(button => button.addEventListener('click', () => showStep(state.step + 1)));
+    document.querySelectorAll('.back').forEach(button => button.addEventListener('click', () => showStep(state.step - 1)));
+    document.querySelectorAll('input, select').forEach(control => control.addEventListener('input', calculate));
+
+    field('sendWhatsapp').addEventListener('click', async () => {
+      const message = calculate();
+      try { await navigator.clipboard.writeText(message); } catch (_) {}
+      field('toast').classList.add('show');
+      setTimeout(() => field('toast').classList.remove('show'), 2400);
+      window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank', 'noopener,noreferrer');
+    });
+
+    calculate();
+  </script>
+</body>
+</html>
