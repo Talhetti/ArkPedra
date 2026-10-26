@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="pt-BR" class="no-js">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#111411">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <meta name="description" content="ArkPedra — simulador de orçamento para marmorarias, com escolha de pedra, medidas, acabamentos e envio pelo WhatsApp.">
+  <title>ArkPedra — Orçamento digital para marmorarias</title>
+  <link rel="preconnect" href="https://api.fontshare.com">
+  <link rel="preconnect" href="https://cdn.fontshare.com" crossorigin>
+  <link href="https://api.fontshare.com/v2/css?f[]=boska@400,500&amp;display=swap" rel="stylesheet">
+  <link rel="preload" as="image" href="assets/images/arkpedra-slab-workshop.webp" fetchpriority="high">
+  <link rel="stylesheet" href="styles.css">
+  <script>document.documentElement.classList.replace('no-js', 'js');</script>
+</head>
+<body>
+  <a class="skip-link" href="#conteudo">Ir para o conteúdo</a>
+  <header class="site-header">
+    <nav class="frame nav" aria-label="Navegação principal">
+      <a class="brand" href="#inicio" aria-label="ArkPedra, início" translate="no"><span aria-hidden="true">A</span>ArkPedra</a>
+      <div class="nav-links"><a href="#simulador">Simulador</a><a href="#processo">Processo</a><a href="#beneficios">Benefícios</a></div>
+      <a class="nav-action" href="#simulador">Simular orçamento</a>
+    </nav>
+  </header>
+
+  <main id="conteudo">
+    <section class="hero" id="inicio" aria-labelledby="hero-title">
+      <div class="hero-media" aria-hidden="true"><img src="assets/images/arkpedra-slab-workshop.webp" width="1800" height="772" alt="" fetchpriority="high"></div>
+      <div class="hero-copy frame">
+        <h1 id="hero-title" class="monument-title" aria-label="ArkPedra"><span>Ark</span><span>Pedra</span></h1>
+        <div class="hero-intro"><p>Seu cliente escolhe a pedra, informa as medidas e envia uma estimativa organizada para o WhatsApp da marmoraria.</p><a class="button button-accent" href="#simulador">Simular orçamento</a></div>
+        <p class="hero-note">Da primeira medida à conversa comercial, sem perder contexto.</p>
+      </div>
+    </section>
+
+    <section class="simulator-section" id="simulador" aria-labelledby="simulator-title">
+      <div class="simulator-intro frame" data-reveal><h2 id="simulator-title">Orçamento em cinco escolhas</h2><p>Experimente o fluxo como seu cliente. Os valores são ilustrativos e seguem a tabela configurada nesta demonstração.</p></div>
+      <div class="simulator-stage frame" data-reveal>
+        <div class="simulator" data-ui aria-label="Simulador de orçamento de bancada">
+          <div class="simulator-topbar"><div><strong>Simule sua bancada</strong><span id="stepStatus" aria-live="polite">Pedra</span></div><button class="reset-button" id="resetSimulator" type="button">Recomeçar</button></div>
+          <div class="simulator-layout">
+            <aside class="step-nav" aria-label="Etapas da simulação">
+              <ol>
+                <li><button type="button" data-go-step="0" aria-current="step">Pedra</button></li>
+                <li><button type="button" data-go-step="1" disabled>Medidas</button></li>
+                <li><button type="button" data-go-step="2" disabled>Cuba</button></li>
+                <li><button type="button" data-go-step="3" disabled>Acabamentos</button></li>
+                <li><button type="button" data-go-step="4" disabled>Estimativa</button></li>
+              </ol>
+            </aside>
+
+            <form class="simulator-form" id="quoteForm" novalidate>
+              <div class="step active" data-step="0" aria-labelledby="stone-title">
+                <div class="step-heading"><span>Pedra</span><h3 id="stone-title">Comece pela matéria</h3><p>Escolha a superfície que mais combina com o projeto.</p></div>
+                <fieldset class="stone-picker" id="stonePicker">
+                  <legend class="sr-only">Escolha a pedra</legend>
+                  <button class="stone-option selected" type="button" data-stone="Granito escuro" data-price="480" aria-pressed="true"><span class="stone-swatch stone-dark" aria-hidden="true"></span><span><strong>Granito escuro</strong><small>R$ 480/m² · resistente e versátil</small></span></button>
+                  <button class="stone-option" type="button" data-stone="Quartzo branco" data-price="920" aria-pressed="false"><span class="stone-swatch stone-white" aria-hidden="true"></span><span><strong>Quartzo branco</strong><small>R$ 920/m² · claro e uniforme</small></span></button>
+                  <button class="stone-option" type="button" data-stone="Mármore claro" data-price="760" aria-pressed="false"><span class="stone-swatch stone-marble" aria-hidden="true"></span><span><strong>Mármore claro</strong><small>R$ 760/m² · veios delicados</small></span></button>
+                  <button class="stone-option" type="button" data-stone="Pedra exótica" data-price="1180" aria-pressed="false"><span class="stone-swatch stone-exotic" aria-hidden="true"></span><span><strong>Pedra exótica</strong><small>R$ 1.180/m² · desenho marcante</small></span></button>
+                </fieldset>
+                <div class="step-actions"><button class="button next" type="button">Informar medidas</button></div>
+              </div>
+
+              <div class="step" data-step="1" aria-labelledby="measures-title" hidden>
+                <div class="step-heading"><span>Medidas</span><h3 id="measures-title">Dimensione as peças</h3><p>Use centímetros. Você poderá revisar tudo antes de enviar.</p></div>
+                <div class="fields">
+                  <div class="field"><label for="length">Comprimento <span>(cm)</span></label><input id="length" name="length" type="number" value="180" min="30" max="900" step="1" inputmode="numeric" autocomplete="off" required aria-describedby="lengthHint lengthError"><small id="lengthHint">Entre 30 e 900 cm.</small><p class="field-error" id="lengthError" aria-live="polite"></p></div>
+                  <div class="field"><label for="depth">Profundidade <span>(cm)</span></label><input id="depth" name="depth" type="number" value="60" min="20" max="180" step="1" inputmode="numeric" autocomplete="off" required aria-describedby="depthHint depthError"><small id="depthHint">Entre 20 e 180 cm.</small><p class="field-error" id="depthError" aria-live="polite"></p></div>
+                  <div class="field field-wide"><label for="quantity">Quantidade de peças</label><input id="quantity" name="quantity" type="number" value="1" min="1" max="20" step="1" inputmode="numeric" autocomplete="off" required aria-describedby="quantityHint quantityError"><small id="quantityHint">De 1 a 20 peças iguais.</small><p class="field-error" id="quantityError" aria-live="polite"></p></div>
+                </div>
+                <div class="step-actions"><button class="button back" type="button">Voltar</button><button class="button next" type="button">Escolher cuba</button></div>
+              </div>
+
+              <div class="step" data-step="2" aria-labelledby="sink-title" hidden>
+                <div class="step-heading"><span>Cuba</span><h3 id="sink-title">Defina o recorte</h3><p>Selecione a cuba e indique onde ela ficará na bancada.</p></div>
+                <div class="fields fields-single">
+                  <div class="field"><label for="sink">Modelo</label><select id="sink" name="sink" autocomplete="off"><option value="0">Sem cuba</option><option value="180">Recorte para cuba do cliente</option><option value="650" selected>Cuba inox simples</option><option value="1100">Cuba gourmet</option></select></div>
+                  <div class="field"><label for="sinkPosition">Posição</label><select id="sinkPosition" name="sinkPosition" autocomplete="off"><option>Centralizada</option><option>À esquerda</option><option>À direita</option></select></div>
+                </div>
+                <div class="step-actions"><button class="button back" type="button">Voltar</button><button class="button next" type="button">Escolher acabamentos</button></div>
+              </div>
+
+              <div class="step" data-step="3" aria-labelledby="finish-title" hidden>
+                <div class="step-heading"><span>Acabamentos</span><h3 id="finish-title">Complete o projeto</h3><p>Inclua frontão, acabamento da borda e instalação.</p></div>
+                <div class="fields fields-single">
+                  <div class="field"><label for="backsplash">Frontão</label><select id="backsplash" name="backsplash" autocomplete="off"><option value="0">Sem frontão</option><option value="10" selected>10 cm</option><option value="15">15 cm</option><option value="20">20 cm</option></select></div>
+                  <div class="field"><label for="finish">Acabamento da borda</label><select id="finish" name="finish" autocomplete="off"><option value="40">Reto polido</option><option value="85" selected>Meia esquadria</option><option value="110">Boleado</option></select></div>
+                  <div class="field field-wide"><label for="installation">Instalação</label><select id="installation" name="installation" autocomplete="off"><option value="320" selected>Incluir instalação</option><option value="0">Somente fornecimento</option></select></div>
+                </div>
+                <div class="step-actions"><button class="button back" type="button">Voltar</button><button class="button next" type="button">Ver estimativa</button></div>
+              </div>
+
+              <div class="step result-step" data-step="4" aria-labelledby="result-title" hidden>
+                <div class="step-heading"><span>Estimativa</span><h3 id="result-title">Pedido pronto para conversar</h3><p>Confira o resumo e envie as escolhas para validação da marmoraria.</p></div>
+                <div class="estimate-breakdown"><div><span>Material e medidas</span><strong id="materialValue">R$ 0</strong></div><div><span>Cuba e acabamento</span><strong id="extrasValue">R$ 0</strong></div><div class="estimate-total"><span>Estimativa</span><strong id="totalValue">R$ 0</strong></div></div>
+                <p class="estimate-note">Valor ilustrativo, sujeito à conferência de medidas, disponibilidade do material e condições da marmoraria.</p>
+                <div class="step-actions"><button class="button back" type="button">Ajustar escolhas</button><button class="button button-whatsapp" id="sendWhatsapp" type="button">Enviar pelo WhatsApp</button></div>
+              </div>
+            </form>
+
+            <aside class="quote-summary" aria-labelledby="summary-title">
+              <div><span class="summary-label">Resumo atualizado</span><h3 id="summary-title">Seu projeto</h3></div>
+              <dl><div><dt>Pedra</dt><dd id="summaryStone">Granito escuro</dd></div><div><dt>Medidas</dt><dd id="summaryMeasures">180 × 60 cm</dd></div><div><dt>Cuba</dt><dd id="summarySink">Cuba inox simples</dd></div><div><dt>Acabamento</dt><dd id="summaryFinish">Meia esquadria</dd></div></dl>
+              <div class="summary-total"><span>Estimativa</span><strong id="summaryTotal">R$ 0</strong></div>
+              <p>A confirmação final acontece com a equipe da marmoraria.</p>
+            </aside>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="material-section" aria-labelledby="material-title">
+      <div class="material-grid frame">
+        <figure class="material-image" data-reveal="image"><img src="assets/images/arkpedra-stone-archive.webp" width="1200" height="1200" loading="lazy" alt="Quatro amostras de pedra: granito escuro, quartzito branco, mármore claro e quartzito verde"><figcaption>Quatro superfícies, quatro pontos de partida.</figcaption></figure>
+        <div class="material-copy" data-reveal><h2 id="material-title">A matéria vem primeiro</h2><div class="material-tabs" role="tablist" aria-label="Materiais em destaque"><button type="button" role="tab" aria-selected="true" aria-controls="material-description" data-material="Granito escuro" data-description="Grão aparente, leitura sóbria e resistência para o uso diário.">Granito</button><button type="button" role="tab" aria-selected="false" aria-controls="material-description" data-material="Quartzo branco" data-description="Superfície clara e regular para composições de linhas contínuas.">Quartzo</button><button type="button" role="tab" aria-selected="false" aria-controls="material-description" data-material="Mármore claro" data-description="Veios naturais que transformam cada corte em uma peça singular.">Mármore</button></div><div id="material-description" role="tabpanel" aria-live="polite"><h3 id="materialName">Granito escuro</h3><p id="materialText">Grão aparente, leitura sóbria e resistência para o uso diário.</p></div><a href="#simulador">Escolher no simulador</a></div>
+      </div>
+    </section>
+
+    <section class="process-section" id="processo" aria-labelledby="process-title">
+      <div class="process-grid frame">
+        <div class="process-visual" data-reveal="image"><img src="assets/images/arkpedra-measuring.webp" width="1400" height="934" loading="lazy" alt="Profissional medindo e marcando uma bancada de pedra escura"></div>
+        <div class="process-copy"><h2 id="process-title" data-reveal>Do corte à conversa</h2><div class="process-moment" data-reveal><p><strong>Primeiro, a pedra.</strong> O cliente compara materiais por aparência e faixa de preço, sem navegar por uma lista abstrata.</p></div><div class="process-moment" data-reveal><p><strong>Depois, as medidas.</strong> Comprimento, profundidade e quantidade entram com limites claros para evitar valores impossíveis.</p></div><div class="process-moment" data-reveal><p><strong>Na sequência, os detalhes.</strong> Cuba, posição, frontão, borda e instalação entram no mesmo raciocínio de orçamento.</p></div><div class="process-moment" data-reveal><p><strong>Por fim, o atendimento.</strong> A estimativa vira uma mensagem organizada para o WhatsApp, pronta para conferência e continuidade.</p></div></div>
+      </div>
+    </section>
+
+    <section class="benefits-section" id="beneficios" aria-labelledby="benefits-title"><div class="frame"><h2 id="benefits-title" data-reveal>Menos vai e volta</h2><div class="benefit-index" data-reveal><article><h3>Para quem compra</h3><p>Preço de referência no próprio ritmo</p><p>Escolhas explicadas em contexto</p><p>Resumo antes de chamar a loja</p><span>Mais segurança para começar a conversa.</span></article><article><h3>Para o atendimento</h3><p>Material e medidas já organizados</p><p>Adicionais descritos sem ambiguidade</p><p>Mensagem pronta no WhatsApp</p><span>Mais contexto desde o primeiro contato.</span></article><article><h3>Para a operação</h3><p>Preços definidos pela marmoraria</p><p>Regras aplicadas de forma consistente</p><p>Estimativa separada da validação final</p><span>Mais previsibilidade sem prometer o que depende de conferência.</span></article></div></div></section>
+
+    <section class="result-story" aria-labelledby="story-title"><div class="result-photo" data-reveal="image"><img src="assets/images/arkpedra-kitchen.webp" width="1400" height="1050" loading="lazy" alt="Cozinha contemporânea com ilha e parede revestidas em quartzito verde escuro"></div><div class="result-message frame" data-reveal><h2 id="story-title">O pedido chega com contexto</h2><div class="message-preview" aria-label="Exemplo da mensagem gerada para o WhatsApp"><p id="messagePreview">Olá! Fiz uma simulação na ArkPedra.<br><br>Pedra: Granito escuro<br>Medidas: 180 × 60 cm<br>Cuba: Cuba inox simples<br>Acabamento: Meia esquadria<br>Estimativa: calculando…<br><br>Gostaria de confirmar o orçamento.</p></div></div></section>
+
+    <section class="closing-section" aria-labelledby="closing-title"><div class="frame closing-grid"><h2 id="closing-title" data-reveal>Um pedido que já chega claro</h2><p data-reveal>Deixe o cliente avançar sozinho até o ponto em que sua equipe agrega mais valor: conferir, orientar e fechar.</p><a class="button button-accent" href="#simulador" data-reveal>Simular orçamento</a></div></section>
+  </main>
+
+  <footer class="site-footer"><div class="frame footer-grid"><div><strong>ArkPedra</strong><span>Orçamento digital para marmorarias.</span></div><nav aria-label="Navegação do rodapé"><a href="#simulador">Simulador</a><a href="#processo">Processo</a><a href="#beneficios">Benefícios</a></nav><div><strong>Fluxo</strong><span>Escolha</span><span>Estimativa</span><span>WhatsApp</span></div><div><strong>Importante</strong><span>Valores sujeitos à validação final.</span></div><p class="footer-wordmark" translate="no" aria-hidden="true">ArkPedra</p><p class="legal">© 2026 ArkPedra</p></div></footer>
+  <div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true">Mensagem pronta para o WhatsApp.</div>
+  <script src="pricing.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

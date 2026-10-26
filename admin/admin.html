@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f4f7f3">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Administração — ArkPedra</title>
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://api.fontshare.com">
+  <link rel="preconnect" href="https://cdn.fontshare.com" crossorigin>
+  <link href="https://api.fontshare.com/v2/css?f[]=boska@400,500&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/admin-assets/admin.css">
+</head>
+<body>
+  <a class="skip-link" href="#adminContent">Ir para o conteúdo</a>
+  <div class="app-shell">
+    <aside class="sidebar" aria-label="Navegação administrativa">
+      <a class="admin-brand" href="/admin" aria-label="ArkPedra, administração" translate="no">
+        <span aria-hidden="true">A</span>
+        <span><strong>ArkPedra</strong><small>Administração</small></span>
+      </a>
+
+      <nav class="admin-nav">
+        <a class="active" href="#pedras">Pedras</a>
+        <a href="#valores">Valores</a>
+        <a href="#imagens">Imagens do site</a>
+      </nav>
+
+      <div class="sidebar-actions">
+        <a href="/" target="_blank" rel="noopener">Abrir site</a>
+        <button id="logoutButton" type="button">Sair</button>
+      </div>
+    </aside>
+
+    <main class="admin-content" id="adminContent">
+      <header class="page-header">
+        <div>
+          <h1>Conteúdo e preços</h1>
+          <p>As alterações salvas passam a valer no simulador assim que o site for recarregado.</p>
+        </div>
+        <span class="save-state" id="saveState" role="status" aria-live="polite">Tudo atualizado</span>
+      </header>
+
+      <div class="security-notice" id="securityNotice" hidden>
+        <strong>Senha de desenvolvimento em uso.</strong>
+        <span>Defina <code>ARKPEDRA_ADMIN_USERNAME</code> e <code>ARKPEDRA_ADMIN_PASSWORD</code> antes de publicar o painel.</span>
+      </div>
+
+      <div class="loading-state" id="loadingState" aria-live="polite">Carregando configurações…</div>
+
+      <section class="settings-section" id="pedras" aria-labelledby="stonesTitle" hidden>
+        <div class="section-intro">
+          <div><h2 id="stonesTitle">Pedras</h2><p>Crie e edite materiais, preços e texturas mostrados na seleção.</p></div>
+          <button class="secondary-button" id="addStoneButton" type="button">Adicionar pedra</button>
+        </div>
+        <div class="settings-list" id="stonesList"></div>
+      </section>
+
+      <section class="settings-section" id="valores" aria-labelledby="pricesTitle" hidden>
+        <div class="section-intro">
+          <h2 id="pricesTitle">Valores adicionais</h2>
+          <p>Controle cubas, frontões, acabamentos e instalação sem alterar o código do simulador.</p>
+        </div>
+        <div class="pricing-groups" id="pricingGroups"></div>
+      </section>
+
+      <section class="settings-section" id="imagens" aria-labelledby="imagesTitle" hidden>
+        <div class="section-intro">
+          <h2 id="imagesTitle">Imagens do site</h2>
+          <p>Substitua as quatro imagens editoriais da landing page. Use JPG, PNG ou WebP de até 5 MB.</p>
+        </div>
+        <div class="settings-list" id="imagesList"></div>
+      </section>
+    </main>
+  </div>
+
+  <dialog class="login-dialog" id="loginDialog" aria-labelledby="loginTitle">
+    <form id="loginForm" method="dialog">
+      <div class="login-mark" aria-hidden="true">A</div>
+      <h2 id="loginTitle">Acessar administração</h2>
+      <p>Use as credenciais definidas para o proprietário da marmoraria.</p>
+      <label for="adminUsername">Usuário</label>
+      <input id="adminUsername" name="username" type="text" autocomplete="username" required>
+      <label for="adminPassword">Senha</label>
+      <input id="adminPassword" name="password" type="password" autocomplete="current-password" required>
+      <p class="form-error" id="loginError" aria-live="polite"></p>
+      <button class="primary-button" type="submit">Entrar</button>
+    </form>
+  </dialog>
+
+  <dialog class="editor-dialog" id="stoneDialog" aria-labelledby="newStoneTitle">
+    <form id="stoneCreateForm">
+      <div class="dialog-heading"><div><h2 id="newStoneTitle">Adicionar pedra</h2><p>O novo material entra no fim da lista do simulador.</p></div><button class="dialog-close" type="button" data-close-dialog="stoneDialog" aria-label="Fechar">×</button></div>
+      <div class="field"><label for="newStoneName">Nome</label><input id="newStoneName" name="name" maxlength="80" autocomplete="off" required></div>
+      <div class="field"><label for="newStonePrice">Preço por m²</label><div class="price-field"><span>R$</span><input id="newStonePrice" name="price" type="number" min="0" step="0.01" inputmode="decimal" autocomplete="off" required></div></div>
+      <div class="field"><label for="newStoneDescription">Descrição curta</label><textarea id="newStoneDescription" name="description" maxlength="180" autocomplete="off"></textarea></div>
+      <div class="field file-field"><label for="newStoneImage">Textura da pedra</label><input id="newStoneImage" name="image" type="file" accept="image/png,image/jpeg,image/webp"><small>Opcional. Você também pode enviar depois.</small></div>
+      <p class="form-error" id="stoneCreateError" aria-live="polite"></p>
+      <div class="form-actions"><button class="secondary-button" type="button" data-close-dialog="stoneDialog">Cancelar</button><button class="primary-button" type="submit">Adicionar pedra</button></div>
+    </form>
+  </dialog>
+
+  <dialog class="editor-dialog" id="optionDialog" aria-labelledby="newOptionTitle">
+    <form id="optionCreateForm">
+      <div class="dialog-heading"><div><h2 id="newOptionTitle">Adicionar opção</h2><p id="newOptionHelp">Crie uma nova escolha para o simulador.</p></div><button class="dialog-close" type="button" data-close-dialog="optionDialog" aria-label="Fechar">×</button></div>
+      <input id="newOptionCategory" name="category" type="hidden">
+      <div class="field"><label for="newOptionLabel">Nome</label><input id="newOptionLabel" name="label" maxlength="100" autocomplete="off" required></div>
+      <div class="field"><label for="newOptionValue">Valor</label><input id="newOptionValue" name="value" type="number" min="0" step="0.01" inputmode="decimal" autocomplete="off" required></div>
+      <p class="form-error" id="optionCreateError" aria-live="polite"></p>
+      <div class="form-actions"><button class="secondary-button" type="button" data-close-dialog="optionDialog">Cancelar</button><button class="primary-button" type="submit">Adicionar opção</button></div>
+    </form>
+  </dialog>
+
+  <div class="admin-toast" id="adminToast" role="status" aria-live="polite" aria-atomic="true"></div>
+  <script src="/admin-assets/admin.js"></script>
+</body>
+</html>
